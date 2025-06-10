@@ -46,7 +46,7 @@ opt = optim.Adam(model.parameters(), lr=1e-4)
 crit = nn.CrossEntropyLoss()
 
 # Training loop
-for epoch in range(4):
+for epoch in range(1):
     model.train()
     total_loss = 0
     for clips, labels in loader:
