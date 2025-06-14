@@ -2,6 +2,10 @@ import torch
 from utils.eval import predict_video
 from data.transforms import get_default_transform
 from models.r3d import build_r3d_model
+import yaml
+
+with open("charades_tal/configs/config.yaml", "r") as f:
+    configs = yaml.safe_load(f)
 
 filtered_actions = ["c047", "c046", "c048", "c049", "c050", "c051"]
 cls2idx = {cls: idx for idx, cls in enumerate(filtered_actions)}
@@ -15,7 +19,7 @@ transform = get_default_transform()
 preds = predict_video(
     model,
     "IPZIV",
-    "CharadesEgo_v1_rgb/CharadesEgo_v1_rgb",
+    configs["frame_root"],
     transform,
     class_map=idx2cls,
     device=device,
