@@ -1,7 +1,7 @@
 import torch
 from utils.eval import predict_dual_view_video
 from data.transforms import get_default_transform
-from models.r3d import build_r3d_model
+from models.ego_exo_fusion import EgoExoFusionModel
 import yaml
 
 with open("charades_tal/configs/config.yaml", "r") as f:
@@ -12,7 +12,7 @@ cls2idx = {cls: idx for idx, cls in enumerate(filtered_actions)}
 idx2cls = {v: k for k, v in cls2idx.items()}
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = build_r3d_model(len(filtered_actions)).to(device)
+model = EgoExoFusionModel(len(filtered_actions)).to(device)
 # model.load_state_dict(torch.load("the_model.pth"))  # when having a pre-built model
 transform = get_default_transform()
 
