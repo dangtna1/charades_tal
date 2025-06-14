@@ -3,11 +3,6 @@ import glob
 import torch
 import numpy as np
 from PIL import Image
-import yaml
-
-# Load config.yaml
-with open("charades_tal/configs/config.yaml", "r") as f:
-    configs = yaml.safe_load(f)
 
 
 @torch.no_grad()
@@ -15,7 +10,8 @@ def predict_dual_view_video(
     model,
     ego_video_id,
     exo_video_id,
-    frame_root=configs["frame_root"],
+    frame_root,
+    transform,
     clip_len=48,
     stride=24,
     fps=24,
@@ -38,7 +34,7 @@ def predict_dual_view_video(
         ego_tensor = (
             torch.stack(
                 [
-                    ds.transform(Image.open(ego_files[i + f]).convert("RGB"))
+                    transform(Image.open(ego_files[i + f]).convert("RGB"))
                     for f in range(clip_len)
                 ],
                 1,
@@ -50,7 +46,7 @@ def predict_dual_view_video(
         exo_tensor = (
             torch.stack(
                 [
-                    ds.transform(Image.open(exo_files[i + f]).convert("RGB"))
+                    transform(Image.open(exo_files[i + f]).convert("RGB"))
                     for f in range(clip_len)
                 ],
                 1,
