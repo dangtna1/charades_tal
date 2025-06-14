@@ -6,11 +6,11 @@ import yaml
 
 from data.dataset import CharadesTAL
 from data.transforms import get_default_transform
-from models.r3d import build_r3d_model
+from models.ego_exo_fusion import EgoExoFusionModel
 
 # Load config.yaml
 with open("charades_tal/configs/config.yaml", "r") as f:
-    config = yaml.safe_load(f)
+    configs = yaml.safe_load(f)
 
 # Load annotation & preprocess
 anno_df = pd.read_csv("CharadesEgo/CharadesEgo_v1_train.csv")  # Change dir if necessary
@@ -39,27 +39,31 @@ cls2idx = {cls: idx for idx, cls in enumerate(filtered_actions)}
 # Instantiate dataset
 dataset = CharadesTAL(
     filtered,
-    config["frame_root"],
+    configs["frame_root"],
     transform=get_default_transform(),
     cls2idx=cls2idx,
-    clip_len=config["clip_len"],
-    stride=config["stride"],
-    fps=config["fps"],
+    clip_len=configs["clip_len"],
+    stride=configs["stride"],
+    fps=configs["fps"],
 )
-loader = DataLoader(dataset, batch_size=config["batch_size"], shuffle=True)
+loader = DataLoader(dataset, batch_size=configs["batch_size"], shuffle=True)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = build_r3d_model(len(filtered_actions)).to(device)
-opt = optim.Adam(model.parameters(), lr=config["lr"])
+model = EgoExoFusionModel(len(filtered_actions)).to(device)
+opt = optim.Adam(model.parameters(), lr=configs["lr"])
 crit = nn.CrossEntropyLoss()
 
 # Training loop
-for epoch in range(config["epochs"]):
+for epoch in range(configs["epochs"]):
     model.train()
     total_loss = 0
-    for clips, labels in loader:
-        clips, labels = clips.to(device), labels.to(device)
-        logits = model(clips)
+    for (ego_clips, exo_clips), labels in loader:
+        ego_clips, exo_clips, labels = (
+            ego_clips.to(device),
+            exo_clips.to(device),
+            labels.to(device),
+        )
+        logits = model(ego_clips, exo_clips)
         loss = crit(logits, labels)
         opt.zero_grad()
         loss.backward()

@@ -1,5 +1,5 @@
 import torch
-from utils.eval import predict_video
+from utils.eval import predict_dual_view_video
 from data.transforms import get_default_transform
 from models.r3d import build_r3d_model
 import yaml
@@ -16,8 +16,9 @@ model = build_r3d_model(len(filtered_actions)).to(device)
 # model.load_state_dict(torch.load("the_model.pth"))  # when having a pre-built model
 transform = get_default_transform()
 
-preds = predict_video(
+preds = predict_dual_view_video(
     model,
+    "IPZIVEGO",
     "IPZIV",
     configs["frame_root"],
     transform,
