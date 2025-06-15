@@ -13,7 +13,9 @@ idx2cls = {v: k for k, v in cls2idx.items()}
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = EgoExoFusionModel(len(filtered_actions)).to(device)
-# model.load_state_dict(torch.load("the_model.pth"))  # when having a pre-built model
+model.load_state_dict(
+    torch.load("ego_exo_fusion_model.pth")
+)  # when having a pre-built model
 transform = get_default_transform()
 
 preds = predict_dual_view_video(

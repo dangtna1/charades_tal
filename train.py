@@ -3,6 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 from torch import optim, nn
 import yaml
+import os
 
 from data.dataset import CharadesTAL
 from data.transforms import get_default_transform
@@ -70,3 +71,6 @@ for epoch in range(configs["epochs"]):
         opt.step()
         total_loss += loss.item()
     print(f"[Epoch {epoch+1}] Loss: {total_loss/len(loader):.4f}")
+
+print("Saving model to:", os.getcwd())
+torch.save(model.state_dict(), "charades_tal/models/ego_exo_fusion_model.pth")
