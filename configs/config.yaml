@@ -5,3 +5,4 @@ fps: 24
 batch_size: 4
 lr: 0.0001
 epochs: 1 # temporary
+filtered_actions: ["c049", "c050", "c051"]

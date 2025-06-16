@@ -30,10 +30,16 @@ for _, r in anno_df.iterrows():
 all_actions = pd.DataFrame(rows)
 
 # Sample some actions
-filtered_actions = ["c047", "c046", "c048", "c049", "c050", "c051"]
+filtered_actions = configs["filtered_actions"]
 
-# Sample some videos for the actions
-filtered = all_actions[all_actions["class"].isin(filtered_actions)][:20]
+# Sample 5 rows for each class in filtered_actions
+filtered = (
+    all_actions[all_actions["class"].isin(filtered_actions)]
+    .groupby("class", group_keys=False)
+    .filter(lambda x: len(x) >= 5)
+    .groupby("class", group_keys=False)
+    .head(25)
+)
 
 cls2idx = {cls: idx for idx, cls in enumerate(filtered_actions)}
 
